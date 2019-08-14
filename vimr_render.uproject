@@ -1,0 +1,32 @@
+{
+	"FileVersion": 3,
+	"EngineAssociation": "4.19",
+	"Category": "",
+	"Description": "",
+	"Modules": [
+		{
+			"Name": "vimr_render",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		}
+	],
+	"Plugins": [
+		{
+			"Name": "Voxels",
+			"Enabled": true
+		}
+	],
+	"TargetPlatforms": [
+		"PS4",
+		"WindowsNoEditor"
+	],
+	"PostBuildSteps": {
+		"Win64": [
+			"IF NOT EXIST \"$(ProjectDir)\\Binaries\\$(TargetPlatform)\\Voxels.dll\" copy /Y \"$(VIMR_ROOT)\\bin\\Voxels.dll\" \"$(ProjectDir)\\Binaries\\$(TargetPlatform)\\\"",
+			"IF NOT EXIST \"$(ProjectDir)\\Binaries\\$(TargetPlatform)\\NetworkUDP_Lib.dll\" copy /Y \"$(VIMR_ROOT)\\bin\\NetworkUDP_Lib.dll\" \"$(ProjectDir)\\Binaries\\$(TargetPlatform)\\\"",
+			"IF NOT EXIST \"$(ProjectDir)\\Binaries\\$(TargetPlatform)\\VoxelVideo.dll\" copy /Y \"$(VIMR_ROOT)\\bin\\VoxelVideo.dll\" \"$(ProjectDir)\\Binaries\\$(TargetPlatform)\\\"",
+			"IF NOT EXIST \"$(ProjectDir)\\Binaries\\$(TargetPlatform)\\VoxelsAsync.dll\" copy /Y \"$(VIMR_ROOT)\\bin\\VoxelsAsync.dll\" \"$(ProjectDir)\\Binaries\\$(TargetPlatform)\\\"",
+			"IF NOT EXIST \"$(ProjectDir)\\Binaries\\$(TargetPlatform)\\NetworkCallbackTCP_Lib.dll\" copy /Y \"$(VIMR_ROOT)\\bin\\NetworkCallbackTCP_Lib.dll\" \"$(ProjectDir)\\Binaries\\$(TargetPlatform)\\\""
+		]
+	}
+}
