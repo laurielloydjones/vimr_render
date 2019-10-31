@@ -13,32 +13,6 @@ using namespace std::placeholders;
 
 DEFINE_LOG_CATEGORY(VoxLog);
 
-const uint8 colors[][3]  =
-{
-	// These are RGB but are converted to BGR when applied to a voxel
-
-{255,255,128}, // head
-{255,128,128}, // left hand
-{128,128,255}, // right hand
-{255,128,128}, // left foot
-{128,128,255}, // right foot
-{128,255,128}, // neck
-{128,128,255}, // left shoulder
-{255,128,128}, // right shoulder
-{128,255,128}, // left arm
-{128,255,128}, // right arm
-{212,170,212}, // left forearm
-{212,170,255}, // right forearm
-{128,192,128}, // upper torso
-{192,255,192}, // lower torso
-{128,128,255}, // left hip
-{255,128,128}, // right hip
-{255,128,128}, // left thigh
-{128,128,255}, // right thigh
-{128,255,128}, // left calf
-{128,255,128} // right calf
-
-};
 
 void UVoxelSourceBaseComponent::CopyVoxelData(Octree* voxels) {
 	if (inProgress) {
@@ -66,70 +40,20 @@ void UVoxelSourceBaseComponent::CopyVoxelData(Octree* voxels) {
 		uint16_t pX = node->pos.x - voxOffset;
 		uint16_t pZ = node->pos.z;
 		
-		uint8 voxLabel = GetMiscLabel(node->data[0]);
-		if (voxLabel == VOXLABEL_REGULARVOXEL) {
-			if (!ShowBodyVoxelsOnly) {
-				CoarsePositionData[buffIdx][pOffset + 0] = (pZ >> 8) + 128;
-				CoarsePositionData[buffIdx][pOffset + 1] = (pY >> 8) + 128;
-				CoarsePositionData[buffIdx][pOffset + 2] = (pX >> 8) + 128;
+		CoarsePositionData[buffIdx][pOffset + 0] = (pZ >> 8) + 128;
+		CoarsePositionData[buffIdx][pOffset + 1] = (pY >> 8) + 128;
+		CoarsePositionData[buffIdx][pOffset + 2] = (pX >> 8) + 128;
 
 
-				PositionData[buffIdx][pOffset + 0] = pZ & 0xFF;
-				PositionData[buffIdx][pOffset + 1] = pY & 0xFF;
-				PositionData[buffIdx][pOffset + 2] = pX & 0xFF;
+		PositionData[buffIdx][pOffset + 0] = pZ & 0xFF;
+		PositionData[buffIdx][pOffset + 1] = pY & 0xFF;
+		PositionData[buffIdx][pOffset + 2] = pX & 0xFF;
 
-				ColourData[buffIdx][pOffset + 0] = node->data[1];
-				ColourData[buffIdx][pOffset + 1] = node->data[2];
-				ColourData[buffIdx][pOffset + 2] = node->data[3];
-				pOffset += VOXEL_TEXTURE_BPP;
-				VoxelCount[buffIdx]++;
-			}
-		}
-		else if (voxLabel < VOXLABEL_BODYPARTOFFSET) {
-			if (ShowSpecialVoxels) {
-				CoarsePositionData[buffIdx][pOffset + 0] = (pZ >> 8) + 128;
-				CoarsePositionData[buffIdx][pOffset + 1] = (pY >> 8) + 128;
-				CoarsePositionData[buffIdx][pOffset + 2] = (pX >> 8) + 128;
-
-				PositionData[buffIdx][pOffset + 0] = pZ & 0xFF;
-				PositionData[buffIdx][pOffset + 1] = pY & 0xFF;
-				PositionData[buffIdx][pOffset + 2] = pX & 0xFF;
-
-				ColourData[buffIdx][pOffset + 0] = 0;
-				ColourData[buffIdx][pOffset + 1] = 0xff;
-				ColourData[buffIdx][pOffset + 2] = 0;
-				pOffset += VOXEL_TEXTURE_BPP;
-				VoxelCount[buffIdx]++;
-			}
-		}
-		else if (voxLabel >= VOXLABEL_BODYPARTOFFSET) {
-			CoarsePositionData[buffIdx][pOffset + 0] = (pZ >> 8) + 128;
-			CoarsePositionData[buffIdx][pOffset + 1] = (pY >> 8) + 128;
-			CoarsePositionData[buffIdx][pOffset + 2] = (pX >> 8) + 128;
-
-			PositionData[buffIdx][pOffset + 0] = pZ & 0xFF;
-			PositionData[buffIdx][pOffset + 1] = pY & 0xFF;
-			PositionData[buffIdx][pOffset + 2] = pX & 0xFF;
-
-			if (ColorBodyVoxels) {
-				uint8 bodyPartLabel = voxLabel - VOXLABEL_BODYPARTOFFSET;
-				ColourData[buffIdx][pOffset + 0] = colors[bodyPartLabel][2];
-				ColourData[buffIdx][pOffset + 1] = colors[bodyPartLabel][1];
-				ColourData[buffIdx][pOffset + 2] = colors[bodyPartLabel][0];
-			}
-			else {
-				ColourData[buffIdx][pOffset + 0] = node->data[1];
-				ColourData[buffIdx][pOffset + 1] = node->data[2];
-				ColourData[buffIdx][pOffset + 2] = node->data[3];
-			}
-			pOffset += VOXEL_TEXTURE_BPP;
-			VoxelCount[buffIdx]++;
-		}
-		// This case is for normal voxels which only have colour data 
-		// plus camera-source label
-		else {
-			UE_LOG(VoxLog, Log, TEXT("Unknown Voxel label %d"), voxLabel);
-		}
+		ColourData[buffIdx][pOffset + 0] = node->data[1];
+		ColourData[buffIdx][pOffset + 1] = node->data[2];
+		ColourData[buffIdx][pOffset + 2] = node->data[3];
+		pOffset += VOXEL_TEXTURE_BPP;
+		VoxelCount[buffIdx]++;
 
 		VoxelSizemm[buffIdx] = (uint8)voxels->meta.voxSize_mm;
 		
