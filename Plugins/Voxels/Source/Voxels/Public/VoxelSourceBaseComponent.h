@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "VoxelSourceInterface.h"
-#include "VIMR/octree.hpp"
+#include "VIMR/VoxelType.hpp"
 #include "Voxels.h"
 #include "AllowWindowsPlatformTypes.h"
 #include "Config.hpp"
@@ -30,7 +30,7 @@ public:
 	
 	int GetSourceType() { return UDPSource; }
 
-	void CopyVoxelData(VIMR::Octree* voxels);
+	void CopyVoxelData(VIMR::VoxelGrid* voxels);
 
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
@@ -45,21 +45,22 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 		bool ShowBodyVoxelsOnly = false;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+		TArray<FVector> SpecialVoxelPos;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+		TArray<FRotator> SpecialVoxelRotation;
 protected:
-
-	// The current serial octree format. Change this in BeginPlay derived classes if they work with older versions
-	unsigned int SerialOctreeFmtVersion = 2;
 
 	// Called when the game starts
 	virtual void BeginPlay() override;
 	std::map<string, string> clientConfig;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	
-	Stu::Config::ConfigFile* VIMRconfig = nullptr;
-	VIMR::Octree::Leaf *node;
+	VIMR::Config::ConfigFile* VIMRconfig = nullptr;
+	VIMR::AVoxelGrid::Voxel *node;
 
 	static const int BufferSize = 2;
-	uint32_t MaxVoxels = 1000000; //FIXME: Hard-coded stuff here
+	uint32_t MaxVoxels = TOTAL_VOXELS; //FIXME: Hard-coded stuff here
 	uint8* CoarsePositionData[BufferSize];
 	uint8* PositionData[BufferSize];
 	uint8* ColourData[BufferSize];

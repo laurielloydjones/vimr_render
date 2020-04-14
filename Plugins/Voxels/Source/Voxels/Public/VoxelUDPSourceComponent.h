@@ -4,8 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "VoxelSourceBaseComponent.h"
-#include "VIMR/VoxelDeserializer.hpp"
-#include "AsyncCallback.hpp"
+#include "VIMR/Deserializer.hpp"
+#include "Async.hpp"
 #include "VoxelUDPSourceComponent.generated.h"
 
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
@@ -26,6 +26,6 @@ protected:
 
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	
-	Stu::AsyncCallback<VIMR::Octree, MESSAGE_BUFFER_COUNT>* voxelcallback;
-	VIMR::VoxelDeserializer* deserializer = nullptr;
+	VIMR::Deserializer* deserializer = nullptr;
+	VIMR::Async::RingbufferConsumer<VIMR::VoxelGrid, 8>* consumer = nullptr;
 };

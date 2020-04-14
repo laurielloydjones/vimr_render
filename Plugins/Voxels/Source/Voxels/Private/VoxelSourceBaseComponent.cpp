@@ -9,12 +9,9 @@
 using namespace VIMR;
 using namespace std::placeholders;
 
-
-
 DEFINE_LOG_CATEGORY(VoxLog);
 
-
-void UVoxelSourceBaseComponent::CopyVoxelData(Octree* voxels) {
+void UVoxelSourceBaseComponent::CopyVoxelData(VIMR::VoxelGrid* voxels) {
 	if (inProgress) {
 		FString failLogMessage = FString("Received more voxels before copying last frame finished. ID: ") + ClientConfigID;
 		UE_LOG(VoxLog, Log, TEXT("%s"), *failLogMessage);
@@ -23,51 +20,43 @@ void UVoxelSourceBaseComponent::CopyVoxelData(Octree* voxels) {
 	
 	inProgress = true;
 	VoxelCount[buffIdx] = 0;
+	VoxelSizemm[buffIdx] = (uint8)voxels->VoxSize_mm();
+	
+	
 	int pOffset = 0;
-	int hasNegativeVoxels = 0;
-	long voxOffset = 0;
-	if (SerialOctreeFmtVersion == 2)
-		voxOffset = voxels->Width() / 2;
-	else {
-		voxOffset = voxels->Width() / 4;
-	}
-	
-	int numleaves = voxels->NumLeaves();
-	
-	while (voxels->GetNextLeafNode(&node)) {
-		
-		uint16_t pY = node->pos.y - voxOffset;
-		uint16_t pX = node->pos.x - voxOffset;
-		uint16_t pZ = node->pos.z;
-		
-		CoarsePositionData[buffIdx][pOffset + 0] = (pZ >> 8) + 128;
-		CoarsePositionData[buffIdx][pOffset + 1] = (pY >> 8) + 128;
-		CoarsePositionData[buffIdx][pOffset + 2] = (pX >> 8) + 128;
+	while (voxels->GetNextVoxel(&node)) {
+		uint8_t label = VIMR::GetLabel(node->data[0]);
+		if (label > 22)
+			continue;
 
+		int16_t pY = node->pos.Y;
+		int16_t pX = node->pos.X;
+		int16_t pZ = node->pos.Z;
 
-		PositionData[buffIdx][pOffset + 0] = pZ & 0xFF;
-		PositionData[buffIdx][pOffset + 1] = pY & 0xFF;
-		PositionData[buffIdx][pOffset + 2] = pX & 0xFF;
 
 		ColourData[buffIdx][pOffset + 0] = node->data[1];
 		ColourData[buffIdx][pOffset + 1] = node->data[2];
 		ColourData[buffIdx][pOffset + 2] = node->data[3];
+
+		CoarsePositionData[buffIdx][pOffset + 0] = (pZ >> 8) + 128;
+		CoarsePositionData[buffIdx][pOffset + 1] = (pY >> 8) + 128;
+		CoarsePositionData[buffIdx][pOffset + 2] = (pX >> 8) + 128;
+		PositionData[buffIdx][pOffset + 0] = pZ & 0xFF;
+		PositionData[buffIdx][pOffset + 1] = pY & 0xFF;
+		PositionData[buffIdx][pOffset + 2] = pX & 0xFF;
 		pOffset += VOXEL_TEXTURE_BPP;
 		VoxelCount[buffIdx]++;
 
-		VoxelSizemm[buffIdx] = (uint8)voxels->meta.voxSize_mm;
-		
 		if (VoxelCount[buffIdx] >= MaxVoxels) {
 			FString failLogMessage = FString("Too Many Voxels! ID: ") + ClientConfigID;
 			UE_LOG(VoxLog, Log, TEXT("%s"), *failLogMessage);
 			break;
 		}
 	}
-	if (hasNegativeVoxels > 0)
-		UE_LOG(VoxLog, Log, TEXT("NegativeVoxels: %d"), hasNegativeVoxels);
-	//UE_LOG(VoxLog, Log, TEXT("Received voxels: %d"), voxels->LeafCount());
+	
 	while (inDisplay)
 		;
+
 	buffIdx = (buffIdx + 1) % BufferSize;
 	dispIdx = (dispIdx + 1) % BufferSize;
 	inProgress = false;
@@ -96,24 +85,29 @@ void UVoxelSourceBaseComponent::BeginPlay()
 	}
 	buffIdx = 1;
 	dispIdx = 0;
+	while (SpecialVoxelPos.Num() < 65) {
+		SpecialVoxelPos.Add(FVector(0, 0, 0));
+		SpecialVoxelRotation.Add(FRotator(0,0,0));
+	}
 	FString startLogMsg = FString("Starting voxel source component with ID: ") + ClientConfigID;
 	UE_LOG(VoxLog, Log, TEXT("%s"), *startLogMsg);
-	VIMRconfig = new Stu::Config::ConfigFile();
+
+	VIMRconfig = new VIMR::Config::ConfigFile();
 	FString localConfigFilePath = FPaths::ProjectDir() + FString(LOCAL_CONFIG_FILENAME);
 	
 	if (!VIMRconfig->Load(TCHAR_TO_ANSI(*localConfigFilePath))) {
 		FString msg = FString("Failed to load config file: ") + localConfigFilePath;
-
 		UE_LOG(VoxLog, Warning, TEXT("%s"), *msg);
-		UKismetSystemLibrary::QuitGame(GetWorld(), GetWorld()->GetFirstPlayerController(), EQuitPreference::Quit);
+		//UKismetSystemLibrary::QuitGame(GetWorld(), GetWorld()->GetFirstPlayerController(), EQuitPreference::Quit);
 	}
-	string loadedLocalPath;
-	VIMRconfig->get<string>("LocalConfigFilePath", loadedLocalPath);
-	UE_LOG(VoxLog, Log, TEXT("Loaded %s"), ANSI_TO_TCHAR(loadedLocalPath.c_str()));
-	VIMRconfig->get<string>("SharedConfigPath", loadedLocalPath);
-	UE_LOG(VoxLog, Log, TEXT("Loaded %s"), ANSI_TO_TCHAR(loadedLocalPath.c_str()));
-	VIMRconfig->get<string>("SharedDataPath", loadedLocalPath);
-	UE_LOG(VoxLog, Log, TEXT("Shared Data at: %s"), ANSI_TO_TCHAR(loadedLocalPath.c_str()));
+
+	string tmpstr;
+	VIMRconfig->get<string>("LocalConfigFilePath", tmpstr);
+	UE_LOG(VoxLog, Log, TEXT("Loaded %s"), ANSI_TO_TCHAR(tmpstr.c_str()));
+	VIMRconfig->get<string>("SharedConfigPath", tmpstr);
+	UE_LOG(VoxLog, Log, TEXT("Loaded %s"), ANSI_TO_TCHAR(tmpstr.c_str()));
+	VIMRconfig->get<string>("SharedDataPath", tmpstr);
+	UE_LOG(VoxLog, Log, TEXT("Shared Data at: %s"), ANSI_TO_TCHAR(tmpstr.c_str()));
 }
 
 void UVoxelSourceBaseComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)

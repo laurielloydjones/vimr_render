@@ -3,13 +3,15 @@
 #include "VoxelVideoSourceComponent.h"
 #include "Engine.h"
 #include <chrono>
+#include <string>
 #include "VoxelRenderSubComponent.h"
 #include <exception>
-#include "VIMR/RawVoxelVideo.hpp"
-#include "VIMR/ZippedVoxelVideo.hpp"
+#include "VIMR/VoxelVideo.hpp"
+#include "VIMR/VideoPlayer.hpp"
 
 using namespace VIMR;
 using namespace std::placeholders;
+using std::string;
 
 // Sets default values for this component's properties
 UVoxelVideoSourceComponent::UVoxelVideoSourceComponent()
@@ -22,96 +24,81 @@ UVoxelVideoSourceComponent::UVoxelVideoSourceComponent()
 // Called when the game starts
 void UVoxelVideoSourceComponent::BeginPlay()
 {
-	SerialOctreeFmtVersion = 1;
 	Super::BeginPlay();
-	SetComponentTickEnabled(false);
-	VoxelVideoReader = nullptr;
-	if (CurrentFrame == nullptr)
-		CurrentFrame = new VIMR::Octree();
-	string tmpstr;
-	VIMRconfig->get<string>("SharedDataPath", tmpstr);
-	// The voxel video path is expected to be in the Recordings directory under the UE4 project contents folder.
-	FullRecordingPath = FString(tmpstr.c_str()) + VideoFileName;
-	if (!AVoxelVideo::Exists(TCHAR_TO_ANSI(*FullRecordingPath))) {
-		UE_LOG(VoxLog, Error, TEXT("File does not exist: %s"), *FullRecordingPath);
-	}
-	else if (AVoxelVideo::IsZipped(TCHAR_TO_ANSI(*FullRecordingPath))) {
-		UE_LOG(VoxLog, Error, TEXT("Compressed voxel video not supported yet: %s"), *FullRecordingPath);
-	}
-	else if(AVoxelVideo::IsRaw(TCHAR_TO_ANSI(*FullRecordingPath))) {
-		UE_LOG(VoxLog, Log, TEXT("Loading raw voxel video from file: %s"), *FullRecordingPath);
-		VoxelVideoReader = new RawVoxelVideo(TCHAR_TO_ANSI(*FullRecordingPath));
-	}
-	else {
-		UE_LOG(VoxLog, Error, TEXT("Unknown file extension. File: %s"), *FullRecordingPath);
-	}
+	string filePath;
+	VIMRconfig->get<string>("SharedDataPath", filePath);
+	baseRecordingPath = FString(ANSI_TO_TCHAR(filePath.c_str()));
+	FString VoxelVideoFilePath = baseRecordingPath  + FString("/") + VideoFileName;
+  	VoxelVideoReader = new VoxVidPlayer(TCHAR_TO_ANSI(*VoxelVideoFilePath), std::bind(&UVoxelSourceBaseComponent::CopyVoxelData, this, _1));
+	VoxelVideoReader->Loop(false);
+	UE_LOG(VoxLog, Log, TEXT("Loaded file %s"), ANSI_TO_TCHAR(filePath.c_str()));
 
-	if (VoxelVideoReader != nullptr) {
-		SetComponentTickEnabled(true);
-		NumAudioStreams = VoxelVideoReader->GetAudioStreamCount();
-		UE_LOG(VoxLog, Log, TEXT("VoxelVideo: Loading %d audio streams"), NumAudioStreams);
-		AudioStreams = new URuntimeAudioSource*[NumAudioStreams];
-		for (int i = 0; i < NumAudioStreams; i++) {
-			URuntimeAudioSource* newSource = NewObject<URuntimeAudioSource>(this);
-			newSource->RegisterComponent();
-			newSource->AttachToComponent(this, FAttachmentTransformRules(EAttachmentRule::KeepRelative, false));
-			VIMR::AudioStream aMap;
-			VoxelVideoReader->GetAudioStream(i, aMap);
-			newSource->LoadBuffer(aMap.WaveBuffer, aMap.WaveBufferSize);
-			AudioStreams[i] = newSource;
-			AudioStreams[i]->StartTimeSec = aMap.SyncOffsetSec;
-		}
-		VoxelVideoReader->SetPaused(false);
-		for (int i = 0; i < NumAudioStreams; i++) {
-			AudioStreams[i]->Stop();
-			AudioStreams[i]->Start();
-		}
+	
+	VIMR::AudioStream tmp_astrm;
+	while(VoxelVideoReader->GetNextAudioStream(tmp_astrm)){
+		URuntimeAudioSource* newSource = NewObject<URuntimeAudioSource>(this);
+		newSource->RegisterComponent();
+		newSource->AttachToComponent(this, FAttachmentTransformRules(EAttachmentRule::KeepRelative, false));
+		FString wav_path = baseRecordingPath + FString("/") + FString(tmp_astrm.file_name);
+		newSource->LoadWav(wav_path);
+		AudioStreams[tmp_astrm.voxel_label] = newSource;
+		FString wav_label = FString(tmp_astrm.voxel_label);
+		UE_LOG(VoxLog, Log, TEXT("Loaded wav: %s"), *wav_path);
+		UE_LOG(VoxLog, Log, TEXT("Loaded wav: %s"), *wav_label);
 	}
-	else {
-		UKismetSystemLibrary::QuitGame(GetWorld(), GetWorld()->GetFirstPlayerController(), EQuitPreference::Quit);
-	}
+	Play();
 }
 
 
 void UVoxelVideoSourceComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	Super::EndPlay(EndPlayReason);
-	if (VoxelVideoReader != nullptr) {
-		VoxelVideoReader->Close();
-	}
-	
+	VoxelVideoReader->Close();
 }
 
 // Called every frame
 void UVoxelVideoSourceComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	if (!cmdStack.empty()) {
+		if (VoxelVideoReader != nullptr) {
+		if (VoxelVideoReader->State() == VIMR::VoxVidPlayer::PlayState::Finished) {
+			//Go to next video
+		}
+	}
+
+	if (!cmdStack.empty()){
 		cmdStack.top()();
 		cmdStack.pop();
-	}
-	
-	VIMR::PlaybackState playState = VoxelVideoReader->NextFrame(&CurrentFrame);
-	if (playState == VIMR::PlaybackNormal) {
-		CopyVoxelData(CurrentFrame);
-	}
-	else if (playState == VIMR::PlaybackFinished) {
-		UE_LOG(VoxLog, Log, TEXT("Video Ended. Restarting Playback."));
-		VoxelVideoReader->Reset();
 	}
 }
 
 void UVoxelVideoSourceComponent::_pause()
 {
-
+	//VoxelVideoReader->Pause();
+	for (auto i : AudioStreams) {
+		i.second->Pause();
+	}
 }
 
 void UVoxelVideoSourceComponent::_play()
 {
-
+	VoxelVideoReader->Play();
+	for (auto i : AudioStreams) {
+		i.second->Start();
+	}
 }
 
 void UVoxelVideoSourceComponent::_stop()
 {
+	_restart();
+	_pause();
+}
 
+void UVoxelVideoSourceComponent::_restart()
+{
+	VoxelVideoReader->Restart();
+	for (auto i : AudioStreams) {
+		i.second->Stop();
+		i.second->Start();
+	}
 }

@@ -1,0 +1,14 @@
+{
+    "Version":0.5,
+    "ComponentID": "Camera0",
+    "RSCExp": 312,
+    "RSCGain": 64,
+    "RSCWB": 4000,
+    "RSDGExp": 20000,
+    "RSDGain": 16,
+    "RSLaser": 280,
+    "CameraSerial":"",
+    "SharedDataPath":"C:/Users/stu/Data/vimr_github/",
+    "SharedConfigPath":"C:/Users/stu/Data/vimr_github/Global_Config.json",
+    "ConverterSourceFile": "C:/Users/stu/Data/vimr_dev/voxvid8.vox"
+}

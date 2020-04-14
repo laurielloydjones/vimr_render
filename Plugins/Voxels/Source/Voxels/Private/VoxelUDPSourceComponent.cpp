@@ -35,8 +35,10 @@ void UVoxelUDPSourceComponent::BeginPlay()
 		UKismetSystemLibrary::QuitGame(GetWorld(), GetWorld()->GetFirstPlayerController(), EQuitPreference::Quit);
 	}
 	clientConfig = NetworkConfig[TCHAR_TO_ANSI(*ClientConfigID)];
-	voxelcallback = new Stu::AsyncCallback<VIMR::Octree, MESSAGE_BUFFER_COUNT>(std::bind(&UVoxelSourceBaseComponent::CopyVoxelData, this, _1));
-	deserializer = new VoxelDeserializer(voxelcallback);
+	consumer = new VIMR::Async::RingbufferConsumer<VIMR::VoxelGrid, 8>(
+		std::bind(&UVoxelSourceBaseComponent::CopyVoxelData, this, std::placeholders::_1)
+		);
+	deserializer = new Deserializer(std::bind(&VIMR::Async::RingbufferConsumer<VIMR::VoxelGrid, 8>::Consume, consumer));
 	if (!deserializer->AddReceiver(TCHAR_TO_ANSI(*ClientConfigID), clientConfig["Address"].c_str(), clientConfig["Port"].c_str())) {
 		UE_LOG(VoxLog, Error, TEXT("Adding receiver for client %s failed. Check configuration."), *ClientConfigID);
 		UKismetSystemLibrary::QuitGame(GetWorld(), GetWorld()->GetFirstPlayerController(), EQuitPreference::Quit);
@@ -48,9 +50,11 @@ void UVoxelUDPSourceComponent::BeginPlay()
 
 void UVoxelUDPSourceComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
+	deserializer->Stop();
+	consumer->Stop();
 	Super::EndPlay(EndPlayReason);
-	deserializer->EndThread();
-	delete deserializer;
+	//deserializer->EndThread();
+	//delete deserializer;
 	//voxelcallback->EndThread();// FIXME: SHould delete this.
 }
 

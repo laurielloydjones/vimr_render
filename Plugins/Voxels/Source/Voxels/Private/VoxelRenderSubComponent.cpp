@@ -10,7 +10,7 @@ UVoxelRenderSubComponent::UVoxelRenderSubComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
 
-	FString VoxelAsset = FString::Printf(TEXT("StaticMesh'/Voxels/Cubes256.Cubes256'"));
+	FString VoxelAsset = FString::Printf(TEXT("StaticMesh'/Voxels/UnitCubesOffset.UnitCubesOffset'"));
 
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> MeshFinder(*VoxelAsset);
 	if(MeshFinder.Object != nullptr)

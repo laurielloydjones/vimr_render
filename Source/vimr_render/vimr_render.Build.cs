@@ -6,11 +6,9 @@ using UnrealBuildTool;
 
 public class vimr_render : ModuleRules
 {
-	
 	public vimr_render(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
-		bEnableExceptions = true;
 		string VIMR_ROOT = System.Environment.GetEnvironmentVariable("VIMR_ROOT");
 
 		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore" });

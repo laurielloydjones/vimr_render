@@ -5,8 +5,8 @@
 #include "VoxelRenderSubComponent.generated.h"
 
 
-#define SUB_VOXEL_COUNT 65536
-#define SUB_VOXEL_COUNT_SQR 256
+#define SUB_VOXEL_COUNT 16384
+#define SUB_VOXEL_COUNT_SQR 128
 #define VOXEL_TEXTURE_BPP 4
 
 UCLASS()
