@@ -8,7 +8,7 @@
 #include "VIMR/VoxelType.hpp"
 #include "Voxels.h"
 #include "AllowWindowsPlatformTypes.h"
-#include "Config.hpp"
+#include "VIMR/UnrealConfigWrapper.hpp"
 #include "HideWindowsPlatformTypes.h"
 #include <map>
 #include <string>
@@ -53,10 +53,9 @@ protected:
 
 	// Called when the game starts
 	virtual void BeginPlay() override;
-	std::map<string, string> clientConfig;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	
-	VIMR::Config::ConfigFile* VIMRconfig = nullptr;
+	VIMR::Config::UnrealConfigWrapper* VIMRconfig = nullptr;
 	VIMR::AVoxelGrid::Voxel *node;
 
 	static const int BufferSize = 2;

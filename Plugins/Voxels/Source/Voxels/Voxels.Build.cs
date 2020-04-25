@@ -6,7 +6,6 @@ public class Voxels : ModuleRules
 {
     public Voxels(ReadOnlyTargetRules Target) : base(Target)
 	{
-		
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 		string VIMR_ROOT = System.Environment.GetEnvironmentVariable("VIMR_ROOT");
 
@@ -31,7 +30,8 @@ public class Voxels : ModuleRules
 				VIMR_ROOT + "/lib/Network.lib",
 				VIMR_ROOT + "/lib/Voxels.lib",
 				VIMR_ROOT + "/lib/VoxelVideo.lib",
-				VIMR_ROOT + "/lib/AsyncSerial.lib"
+				VIMR_ROOT + "/lib/AsyncSerial.lib",
+				VIMR_ROOT + "/lib/UnrealConfigWrapper.lib"
             }
             );
 

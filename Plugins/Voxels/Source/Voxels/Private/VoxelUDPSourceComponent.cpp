@@ -4,9 +4,7 @@
 #include "Engine.h"
 #include <chrono>
 #include "VoxelRenderSubComponent.h"
-//#include <exception>
 
-using namespace VIMR;
 using namespace std::placeholders;
 
 // Sets default values for this component's properties
@@ -23,24 +21,21 @@ void UVoxelUDPSourceComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	SetComponentTickEnabled(false);
-	std::map<string, map<string, string>> NetworkConfig;
-	if (!VIMRconfig->get<std::map<string, map<string, string>>>("Components", NetworkConfig)) {
-		FString msg = FString("Failed to get config key 'NetworkConfig'");
-		UE_LOG(VoxLog, Warning, TEXT("%s"), *msg);
-		UKismetSystemLibrary::QuitGame(GetWorld(), GetWorld()->GetFirstPlayerController(), EQuitPreference::Quit);
-	}
-	if (NetworkConfig.count(TCHAR_TO_ANSI(*ClientConfigID)) == 0) {
-		FString msg = FString("Network Config doesn't contain clientID key");
-		UE_LOG(VoxLog, Warning, TEXT("%s"), *msg);
-		UKismetSystemLibrary::QuitGame(GetWorld(), GetWorld()->GetFirstPlayerController(), EQuitPreference::Quit);
-	}
-	clientConfig = NetworkConfig[TCHAR_TO_ANSI(*ClientConfigID)];
-	consumer = new VIMR::Async::RingbufferConsumer<VIMR::VoxelGrid, 8>(
-		std::bind(&UVoxelSourceBaseComponent::CopyVoxelData, this, std::placeholders::_1)
-		);
-	deserializer = new Deserializer(std::bind(&VIMR::Async::RingbufferConsumer<VIMR::VoxelGrid, 8>::Consume, consumer));
-	if (!deserializer->AddReceiver(TCHAR_TO_ANSI(*ClientConfigID), clientConfig["Address"].c_str(), clientConfig["Port"].c_str())) {
-		UE_LOG(VoxLog, Error, TEXT("Adding receiver for client %s failed. Check configuration."), *ClientConfigID);
+
+	char* cliAddr, *cliPort;
+	size_t sln;
+	if(VIMRconfig->GetComponentConfigVal(TCHAR_TO_ANSI(*ClientConfigID),"Address",&cliAddr,sln)){
+		// Success
+	}else{/*fail*/}
+	if(VIMRconfig->GetComponentConfigVal(TCHAR_TO_ANSI(*ClientConfigID),"Port",&cliPort,sln)){
+		// Success
+	}else{/*fail*/}
+	consumer = new VIMR::Async::RingbufferConsumer<VIMR::VoxelGrid, 8>(std::bind(&UVoxelSourceBaseComponent::CopyVoxelData, this, std::placeholders::_1));
+
+	deserializer = new VIMR::Deserializer(std::bind(&VIMR::Async::RingbufferConsumer<VIMR::VoxelGrid, 8>::Consume, consumer));
+	UE_LOG(VoxLog, Log, TEXT("Adding receiver %s  %s:%s"), *ClientConfigID, ANSI_TO_TCHAR(cliAddr), ANSI_TO_TCHAR(cliPort));;
+	if (!deserializer->AddReceiver(TCHAR_TO_ANSI(*ClientConfigID), cliAddr, cliPort)) {
+		UE_LOG(VoxLog, Error, TEXT("Adding receiver %s  %s:%s"), *ClientConfigID, ANSI_TO_TCHAR(cliAddr), ANSI_TO_TCHAR(cliPort));;
 		UKismetSystemLibrary::QuitGame(GetWorld(), GetWorld()->GetFirstPlayerController(), EQuitPreference::Quit);
 	}
 	else {

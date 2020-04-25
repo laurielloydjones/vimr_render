@@ -16,12 +16,13 @@ public class vimr_render : ModuleRules
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 		if(Target.Platform == UnrealTargetPlatform.Win64)
 		{
+			Definitions.Add("JSON_NOEXCEPTION");
 			string ProjectRoot = Directory.GetParent(ModuleDirectory).Parent.FullName;
 			RuntimeDependencies.Add(ProjectRoot + @"\Binaries\Win64\Voxels.dll");
-			RuntimeDependencies.Add(ProjectRoot + @"\Binaries\Win64\NetworkUDP_Lib.dll");
+			RuntimeDependencies.Add(ProjectRoot + @"\Binaries\Win64\Network.dll");
 			RuntimeDependencies.Add(ProjectRoot + @"\Binaries\Win64\VoxelVideo.dll");
-			RuntimeDependencies.Add(ProjectRoot + @"\Binaries\Win64\VoxelsAsync.dll");
-			RuntimeDependencies.Add(ProjectRoot + @"\Binaries\Win64\NetworkCallbackTCP_Lib.dll");
+			RuntimeDependencies.Add(ProjectRoot + @"\Binaries\Win64\AsyncSerial.dll");
+			RuntimeDependencies.Add(ProjectRoot + @"\Binaries\Win64\UnrealConfigWrapper.dll");
 		}
 	}
 }

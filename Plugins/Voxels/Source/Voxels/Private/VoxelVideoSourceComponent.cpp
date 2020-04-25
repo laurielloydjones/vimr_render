@@ -1,3 +1,6 @@
+
+
+
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "VoxelVideoSourceComponent.h"
@@ -9,7 +12,6 @@
 #include "VIMR/VoxelVideo.hpp"
 #include "VIMR/VideoPlayer.hpp"
 
-using namespace VIMR;
 using namespace std::placeholders;
 using std::string;
 
@@ -25,13 +27,20 @@ UVoxelVideoSourceComponent::UVoxelVideoSourceComponent()
 void UVoxelVideoSourceComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	string filePath;
-	VIMRconfig->get<string>("SharedDataPath", filePath);
-	baseRecordingPath = FString(ANSI_TO_TCHAR(filePath.c_str()));
+	char* datapath;
+	size_t dplen;
+	if(VIMRconfig->GetString("SharedDataPath", &datapath, dplen)){
+
+	}
+	else{
+		//Exit game?
+	}
+
+	baseRecordingPath = FString(ANSI_TO_TCHAR(datapath));
 	FString VoxelVideoFilePath = baseRecordingPath  + FString("/") + VideoFileName;
-  	VoxelVideoReader = new VoxVidPlayer(TCHAR_TO_ANSI(*VoxelVideoFilePath), std::bind(&UVoxelSourceBaseComponent::CopyVoxelData, this, _1));
-	VoxelVideoReader->Loop(false);
-	UE_LOG(VoxLog, Log, TEXT("Loaded file %s"), ANSI_TO_TCHAR(filePath.c_str()));
+  	VoxelVideoReader = new VIMR::VoxVidPlayer(TCHAR_TO_ANSI(*VoxelVideoFilePath), std::bind(&UVoxelSourceBaseComponent::CopyVoxelData, this, _1));
+	VoxelVideoReader->Loop(true);
+	UE_LOG(VoxLog, Log, TEXT("Loaded file %s"), *VoxelVideoFilePath);
 
 	
 	VIMR::AudioStream tmp_astrm;

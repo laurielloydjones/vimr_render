@@ -6,7 +6,7 @@
 #include"Runtime/Engine/Classes/Kismet/KismetSystemLibrary.h"
 #include "VIMR/semanticlabel.hpp"
 #include <chrono>
-using namespace VIMR;
+#include <functional>
 using namespace std::placeholders;
 
 DEFINE_LOG_CATEGORY(VoxLog);
@@ -92,8 +92,8 @@ void UVoxelSourceBaseComponent::BeginPlay()
 	FString startLogMsg = FString("Starting voxel source component with ID: ") + ClientConfigID;
 	UE_LOG(VoxLog, Log, TEXT("%s"), *startLogMsg);
 
-	VIMRconfig = new VIMR::Config::ConfigFile();
-	FString localConfigFilePath = FPaths::ProjectDir() + FString(LOCAL_CONFIG_FILENAME);
+	VIMRconfig = new VIMR::Config::UnrealConfigWrapper();
+	FString localConfigFilePath = FPaths::ProjectDir() + FString("Local_Config.json");
 	
 	if (!VIMRconfig->Load(TCHAR_TO_ANSI(*localConfigFilePath))) {
 		FString msg = FString("Failed to load config file: ") + localConfigFilePath;
@@ -101,13 +101,20 @@ void UVoxelSourceBaseComponent::BeginPlay()
 		//UKismetSystemLibrary::QuitGame(GetWorld(), GetWorld()->GetFirstPlayerController(), EQuitPreference::Quit);
 	}
 
-	string tmpstr;
-	VIMRconfig->get<string>("LocalConfigFilePath", tmpstr);
-	UE_LOG(VoxLog, Log, TEXT("Loaded %s"), ANSI_TO_TCHAR(tmpstr.c_str()));
-	VIMRconfig->get<string>("SharedConfigPath", tmpstr);
-	UE_LOG(VoxLog, Log, TEXT("Loaded %s"), ANSI_TO_TCHAR(tmpstr.c_str()));
-	VIMRconfig->get<string>("SharedDataPath", tmpstr);
-	UE_LOG(VoxLog, Log, TEXT("Shared Data at: %s"), ANSI_TO_TCHAR(tmpstr.c_str()));
+	char* local_conf_file, *shared_conf_file, *shared_data_path;
+	size_t ln;
+	
+	if(VIMRconfig->GetString("LocalConfigFilePath", &local_conf_file, ln)){
+		UE_LOG(VoxLog, Log, TEXT("Loaded %s"), ANSI_TO_TCHAR(local_conf_file));
+	}
+	
+	if(VIMRconfig->GetString("SharedConfigPath", &shared_conf_file, ln)){
+		UE_LOG(VoxLog, Log, TEXT("Loaded %s"), ANSI_TO_TCHAR(shared_conf_file));
+	}
+	
+	if(VIMRconfig->GetString("SharedDataPath", &shared_data_path, ln)){
+		UE_LOG(VoxLog, Log, TEXT("Shared Data at: %s"), ANSI_TO_TCHAR(shared_data_path));
+	}
 }
 
 void UVoxelSourceBaseComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
