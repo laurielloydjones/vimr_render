@@ -8,7 +8,7 @@ public class Voxels : ModuleRules
 	{
 		Definitions.Add("JSON_NOEXCEPTION");
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
-		string VIMR_ROOT = System.Environment.GetEnvironmentVariable("VIMR_ROOT_DEV");
+		string VIMR_ROOT = System.Environment.GetEnvironmentVariable("VIMR_ROOT");
 
 		PublicIncludePaths.AddRange(
 			new string[] {

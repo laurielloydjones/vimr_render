@@ -22,11 +22,11 @@
 	],
 	"PostBuildSteps": {
 		"Win64": [
-			"IF NOT EXIST \"$(ProjectDir)\\Binaries\\$(TargetPlatform)\\Voxels.dll\" copy /Y \"$(VIMR_ROOT_DEV)\\bin\\Voxels.dll\" \"$(ProjectDir)\\Binaries\\$(TargetPlatform)\\\"",
-			"IF NOT EXIST \"$(ProjectDir)\\Binaries\\$(TargetPlatform)\\Network.dll\" copy /Y \"$(VIMR_ROOT_DEV)\\bin\\Network.dll\" \"$(ProjectDir)\\Binaries\\$(TargetPlatform)\\\"",
-			"IF NOT EXIST \"$(ProjectDir)\\Binaries\\$(TargetPlatform)\\VoxelVideo.dll\" copy /Y \"$(VIMR_ROOT_DEV)\\bin\\VoxelVideo.dll\" \"$(ProjectDir)\\Binaries\\$(TargetPlatform)\\\"",
-			"IF NOT EXIST \"$(ProjectDir)\\Binaries\\$(TargetPlatform)\\AsyncSerial.dll\" copy /Y \"$(VIMR_ROOT_DEV)\\bin\\AsyncSerial.dll\" \"$(ProjectDir)\\Binaries\\$(TargetPlatform)\\\"",
-			"IF NOT EXIST \"$(ProjectDir)\\Binaries\\$(TargetPlatform)\\UnrealConfigWrapper.dll\" copy /Y \"$(VIMR_ROOT_DEV)\\bin\\UnrealConfigWrapper.dll\" \"$(ProjectDir)\\Binaries\\$(TargetPlatform)\\\"",
+			"IF NOT EXIST \"$(ProjectDir)\\Binaries\\$(TargetPlatform)\\Voxels.dll\" copy /Y \"$(VIMR_ROOT)\\bin\\Voxels.dll\" \"$(ProjectDir)\\Binaries\\$(TargetPlatform)\\\"",
+			"IF NOT EXIST \"$(ProjectDir)\\Binaries\\$(TargetPlatform)\\Network.dll\" copy /Y \"$(VIMR_ROOT)\\bin\\Network.dll\" \"$(ProjectDir)\\Binaries\\$(TargetPlatform)\\\"",
+			"IF NOT EXIST \"$(ProjectDir)\\Binaries\\$(TargetPlatform)\\VoxelVideo.dll\" copy /Y \"$(VIMR_ROOT)\\bin\\VoxelVideo.dll\" \"$(ProjectDir)\\Binaries\\$(TargetPlatform)\\\"",
+			"IF NOT EXIST \"$(ProjectDir)\\Binaries\\$(TargetPlatform)\\AsyncSerial.dll\" copy /Y \"$(VIMR_ROOT)\\bin\\AsyncSerial.dll\" \"$(ProjectDir)\\Binaries\\$(TargetPlatform)\\\"",
+			"IF NOT EXIST \"$(ProjectDir)\\Binaries\\$(TargetPlatform)\\UnrealConfigWrapper.dll\" copy /Y \"$(VIMR_ROOT)\\bin\\UnrealConfigWrapper.dll\" \"$(ProjectDir)\\Binaries\\$(TargetPlatform)\\\"",
 		]
 	}
 }
