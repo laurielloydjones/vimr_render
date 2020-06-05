@@ -4,7 +4,6 @@
 #include "Engine.h"
 #include "VoxelRenderSubComponent.h"
 #include"Runtime/Engine/Classes/Kismet/KismetSystemLibrary.h"
-#include "VIMR/semanticlabel.hpp"
 #include <chrono>
 #include <functional>
 using namespace std::placeholders;
@@ -25,9 +24,9 @@ void UVoxelSourceBaseComponent::CopyVoxelData(VIMR::VoxelGrid* voxels) {
 	
 	int pOffset = 0;
 	while (voxels->GetNextVoxel(&node)) {
-		uint8_t label = VIMR::GetLabel(node->data[0]);
-		if (label > 22)
-			continue;
+		//uint8_t label = VIMR::GetLabel(node->data[3]);
+		//if (label > 22)
+		//	continue;
 
 		int16_t pY = node->pos.Y;
 		int16_t pX = node->pos.X;

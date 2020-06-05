@@ -1,14 +1,14 @@
 {
-    "Version":0.5,
+    "Version":0.4,
     "ComponentID": "Render",
     "RSCExp": 312,
     "RSCGain": 64,
     "RSCWB": 4000,
-    "RSDGExp": 20000,
-    "RSDGain": 16,
-    "RSLaser": 280,
+    "RSDGExp": 32000,
+    "RSDGain": 156,
+    "RSLaser": 200,
     "CameraSerial":"",
-    "SharedDataPath":"",
-    "SharedConfigPath":"",
-    "ConverterSourceFile": ""
+    "SharedDataPath":"C:/Users/stu/VIMR/vimr_mirror/",
+    "SharedConfigPath":"C:/Users/stu/VIMR/vimr_mirror/Global_Config.json",
+    "ConverterSourceFile": "C:/Users/stu/VIMR/vimr_mirror/voxvid.vox"
 }

@@ -9,7 +9,7 @@ public class vimr_render : ModuleRules
 	public vimr_render(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
-		string VIMR_ROOT = System.Environment.GetEnvironmentVariable("VIMR_ROOT");
+		string VIMR_ROOT = System.Environment.GetEnvironmentVariable("VIMR_ROOT_DEV");
 
 		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore" });
 

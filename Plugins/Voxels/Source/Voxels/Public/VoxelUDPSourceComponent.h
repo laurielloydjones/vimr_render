@@ -5,7 +5,11 @@
 #include "CoreMinimal.h"
 #include "VoxelSourceBaseComponent.h"
 #include "VIMR/Deserializer.hpp"
+#include "DataBuffer.hpp"
+#include "UDPStreamAsync.hpp"
 #include "Async.hpp"
+#include <map>
+#include <string>
 #include "VoxelUDPSourceComponent.generated.h"
 
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
@@ -27,5 +31,8 @@ protected:
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	
 	VIMR::Deserializer* deserializer = nullptr;
+	bool sendPoses = false;
+	std::map<std::string, VIMR::Network::UDPSenderAsync*> pose_senders;
+	VIMR::Utils::Buffer<char, 128> pose_buf;
 	VIMR::Async::RingbufferConsumer<VIMR::VoxelGrid, 8>* consumer = nullptr;
 };
