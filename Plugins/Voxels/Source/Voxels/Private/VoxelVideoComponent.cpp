@@ -43,7 +43,8 @@ void UVoxelVideoComponent::BeginPlay()
 		//Exit game?
 	}
 
-	FString video_path = FPaths::ProjectContentDir() + FString("VoxelVideos/") + RecordingPath;
+	FString voxelvideo_dir = FPaths::ProjectContentDir() + FString("VoxelVideos/");
+	FString video_path = voxelvideo_dir + RecordingPath;
 
   	VoxelVideoReader = new VIMR::VoxVidPlayer(TCHAR_TO_ANSI(*video_path), std::bind(&UVoxelVideoComponent::CopyVoxelData, this, std::placeholders::_1));
 	VoxelVideoReader->Loop(false);
@@ -53,7 +54,7 @@ void UVoxelVideoComponent::BeginPlay()
 	while(VoxelVideoReader->GetNextAudioStream(tmp_astrm))
 	{
 		URuntimeAudioSource* newSource = NewObject<URuntimeAudioSource>(this);
-		FString wav_path = video_path + FString("/") + FString(tmp_astrm.file_name);
+		FString wav_path = voxelvideo_dir + FString(tmp_astrm.file_name);
 		FString wav_label = FString(tmp_astrm.voxel_label);
 
 		newSource->RegisterComponent();
