@@ -26,5 +26,9 @@ enum SourceTypes
 {
 	VoxelVideoSource,
 	UDPSource,
-	UDPServerSource
+	UDPServerSource,
+	DebugSource,
+	RecordingSource,
+	KinectSource,
+	GVDBSource,
 };

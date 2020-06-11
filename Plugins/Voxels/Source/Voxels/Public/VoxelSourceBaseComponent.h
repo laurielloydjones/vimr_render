@@ -7,11 +7,14 @@
 #include "VoxelSourceInterface.h"
 #include "VIMR/VoxelType.hpp"
 #include "Voxels.h"
+#include "VoxelRenderComponent.h"
 #include "AllowWindowsPlatformTypes.h"
 #include "VIMR/UnrealConfigWrapper.hpp"
 #include "HideWindowsPlatformTypes.h"
+
 #include <map>
 #include <string>
+
 #include "VoxelSourceBaseComponent.generated.h"
 
 using std::map;

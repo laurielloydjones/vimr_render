@@ -5,7 +5,6 @@
 #include "VoxelSourceInterface.h"
 #include "VoxelRenderComponent.generated.h"
 
-
 #define TOTAL_VOXELS 786432
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )

@@ -8,7 +8,7 @@
     "RSDGain": 156,
     "RSLaser": 200,
     "CameraSerial":"",
-    "SharedDataPath":"C:/Users/stu/VIMR/vimr_mirror/",
-    "SharedConfigPath":"C:/Users/stu/VIMR/vimr_mirror/Global_Config.json",
+    "SharedDataPath":"N:/",
+    "SharedConfigPath":"N:/GlobalConfig.json",
     "ConverterSourceFile": "C:/Users/stu/VIMR/vimr_mirror/voxvid.vox"
 }
