@@ -40,6 +40,7 @@ public class Voxels : ModuleRules
 			new string[]
 			{
 				"Core",
+				"HeadMountedDisplay"
 			}
 			);
 
