@@ -5,7 +5,7 @@
 #include "VoxelSourceInterface.h"
 #include "VoxelRenderComponent.generated.h"
 
-#define TOTAL_VOXELS 786432
+#define TOTAL_VOXELS 196608
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class VOXELS_API UVoxelRenderComponent : public USceneComponent
@@ -16,10 +16,13 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	UFUNCTION(BlueprintCallable)
-	void SetScale(float Scale);
+		void SetScale(float Scale);
 
 	UFUNCTION(BlueprintCallable)
-	void SetLocation(FVector Location);
+		void SetLocation(FVector Location);
+
+	UFUNCTION(BlueprintCallable)
+		void SetRotation(FVector Rotation);
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Default)

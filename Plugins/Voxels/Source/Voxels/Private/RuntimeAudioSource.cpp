@@ -15,15 +15,16 @@ URuntimeAudioSource::URuntimeAudioSource()
 
 void URuntimeAudioSource::LoadWav(FString wavPath)
 {
+	// Sound Attenuation Settings
 	SoundAttenuation = NewObject<USoundAttenuation>();
 	SoundAttenuation->Attenuation.bAttenuate = 1;
 	SoundAttenuation->Attenuation.bSpatialize = 1;
-
-	SoundAttenuation->Attenuation.AbsorptionMethod = EAirAbsorptionMethod::Linear;
+	SoundAttenuation->Attenuation.DistanceAlgorithm = EAttenuationDistanceModel::NaturalSound;
+	SoundAttenuation->Attenuation.FalloffDistance = 2500; // 2.5m, this depends on the environment and the playback sound loudness.
 
 	SoundWave = NewObject<USoundWaveProcedural>();
 	SoundWave->NumChannels = 1;
-	SoundWave->SampleRate = 44100;
+	SoundWave->SetSampleRate(44100);
 	SoundWave->bLooping = false;
 	SoundWave->bProcedural = true;
 	SoundWave->Volume = 1.0f;
@@ -34,7 +35,7 @@ void URuntimeAudioSource::LoadWav(FString wavPath)
 	FAudioDevice::FCreateComponentParams Params = FAudioDevice::FCreateComponentParams(GetWorld(), GetAttachmentRootActor());
 	Params.bPlay = false;
 	Params.AttenuationSettings = SoundAttenuation;
-	FAudioDevice* AudioDevice = GEngine->GetActiveAudioDevice();
+	FAudioDeviceHandle AudioDevice = GEngine->GetActiveAudioDevice();
 	AudioComponent = AudioDevice->CreateComponent(SoundWave, Params);
 
 	if (AudioComponent)
@@ -47,8 +48,8 @@ void URuntimeAudioSource::LoadWav(FString wavPath)
 		AudioComponent->bIsUISound = true;
 		AudioComponent->bAllowSpatialization = true;
 		AudioComponent->bAutoDestroy = false;
-
 		AudioComponent->OnUpdateTransform(EUpdateTransformFlags::PropagateFromParent);
+		//AudioComponent->SetFlags(RF_MarkAsNative);
 	}
 	else
 	{
@@ -56,52 +57,8 @@ void URuntimeAudioSource::LoadWav(FString wavPath)
 	FFileHelper::LoadFileToArray(audioData, wavPath.GetCharArray().GetData());
 	SoundWave->ResetAudio();
 	SoundWave->QueueAudio(audioData.GetData(), audioData.Num());
-}
 
-void URuntimeAudioSource::LoadBuffer(char* data, int numdata)
-{
-	SoundAttenuation = NewObject<USoundAttenuation>();
-	SoundAttenuation->Attenuation.bAttenuate = 1;
-	SoundAttenuation->Attenuation.bSpatialize = 1;
-
-	SoundAttenuation->Attenuation.AbsorptionMethod = EAirAbsorptionMethod::Linear;
-
-	SoundWave = NewObject<USoundWaveProcedural>();
-	SoundWave->NumChannels = 1;
-	SoundWave->SampleRate = 44100;
-	SoundWave->bLooping = false;
-	SoundWave->bProcedural = true;
-	SoundWave->Volume = 1.0f;
-	SoundWave->Duration = INDEFINITELY_LOOPING_DURATION;
-	SoundWave->SoundGroup = SOUNDGROUP_Voice;
-	SoundWave->bCanProcessAsync = true;
-
-	FAudioDevice::FCreateComponentParams Params = FAudioDevice::FCreateComponentParams(GetWorld(), GetAttachmentRootActor());
-	Params.bPlay = false;
-	Params.AttenuationSettings = SoundAttenuation;
-	FAudioDevice* AudioDevice = GEngine->GetActiveAudioDevice();
-	AudioComponent = AudioDevice->CreateComponent(SoundWave, Params);
-
-	if (AudioComponent)
-	{
-		AudioComponent->RegisterComponent();
-		AudioComponent->AttachToComponent(this, FAttachmentTransformRules(EAttachmentRule::KeepRelative, false));
-		AudioComponent->bAutoActivate = true;
-		AudioComponent->bAlwaysPlay = true;
-		AudioComponent->VolumeMultiplier = 1.2f;
-		AudioComponent->bIsUISound = true;
-		AudioComponent->bAllowSpatialization = true;
-		AudioComponent->bAutoDestroy = false;
-
-		AudioComponent->OnUpdateTransform(EUpdateTransformFlags::PropagateFromParent);
-	}
-	else
-	{
-	}
-	audioData.AddUninitialized(numdata);
-	FMemory::Memcpy(audioData.GetData(), data, numdata);
-	SoundWave->ResetAudio();
-	SoundWave->QueueAudio(audioData.GetData(), numdata);
+	SetIsReplicated(true);
 }
 
 void URuntimeAudioSource::Start()
@@ -144,4 +101,9 @@ bool URuntimeAudioSource::IsReady()
 void URuntimeAudioSource::BeginPlay()
 {
 	Super::BeginPlay();
+}
+
+void URuntimeAudioSource::clear()
+{
+	SoundWave->ResetAudio();
 }

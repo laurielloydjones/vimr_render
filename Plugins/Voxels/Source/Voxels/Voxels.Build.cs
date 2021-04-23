@@ -8,7 +8,7 @@ public class Voxels : ModuleRules
 	{
 		Definitions.Add("JSON_NOEXCEPTION");
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
-		string VIMR_ROOT = System.Environment.GetEnvironmentVariable("VIMR_ROOT");
+		string VIMR_ROOT = System.Environment.GetEnvironmentVariable("VIMR_ROOT_DEV");
 
 		PublicIncludePaths.AddRange(
 			new string[] {
@@ -28,11 +28,12 @@ public class Voxels : ModuleRules
         PublicAdditionalLibraries.AddRange(
             new string[]
             {
-				VIMR_ROOT + "/lib/Network.lib",
-				VIMR_ROOT + "/lib/Voxels.lib",
-				VIMR_ROOT + "/lib/VoxelVideo.lib",
-				VIMR_ROOT + "/lib/AsyncSerial.lib",
-				VIMR_ROOT + "/lib/UnrealConfigWrapper.lib"
+                VIMR_ROOT + "/lib/vimr_network.lib",
+                VIMR_ROOT + "/lib/vimr_voxels.lib",
+                VIMR_ROOT + "/lib/vimr_voxvid.lib",
+                VIMR_ROOT + "/lib/vimr_async_serial.lib",
+                VIMR_ROOT + "/lib/vimr_config.lib",
+                VIMR_ROOT + "/lib/vimr_cfg_unreal.lib"
             }
             );
 
@@ -40,8 +41,8 @@ public class Voxels : ModuleRules
 			new string[]
 			{
 				"Core",
-				"HeadMountedDisplay"
-			}
+                "HeadMountedDisplay",
+            }
 			);
 
 

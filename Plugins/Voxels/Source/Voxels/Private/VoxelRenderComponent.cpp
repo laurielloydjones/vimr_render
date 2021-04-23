@@ -15,6 +15,8 @@ UVoxelRenderComponent::UVoxelRenderComponent(const FObjectInitializer& ObjectIni
 		VRSC->SetupAttachment(GetAttachmentRoot());
 		VoxelRenderers.Add(VRSC);
 	}
+
+	//SetIsReplicated(true);
 }
 
 
@@ -130,5 +132,13 @@ void UVoxelRenderComponent::SetLocation(FVector Location)
 	for (auto& VRSC : VoxelRenderers)
 	{
 		VRSC->SetLocation(Location);
+	}
+}
+
+void UVoxelRenderComponent::SetRotation(FVector Rotation)
+{
+	for (auto& VRSC : VoxelRenderers)
+	{
+		VRSC->SetRotation(Rotation);
 	}
 }

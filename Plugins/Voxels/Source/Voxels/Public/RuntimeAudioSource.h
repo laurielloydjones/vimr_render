@@ -47,6 +47,12 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 		float StartTimeSec;
 
+	void clear();
+
+	UAudioComponent* GetAudioComponent()
+	{
+		return AudioComponent;
+	}
 
 protected:
 	// Called when the game starts

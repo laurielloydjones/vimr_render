@@ -4,10 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "VoxelSourceBaseComponent.h"
-#include "VIMR/Deserializer.hpp"
-#include "DataBuffer.hpp"
-#include "UDPStreamAsync.hpp"
-#include "Async.hpp"
+#include "VIMR/deserialize.hpp"
+#include "VIMR/buffer.hpp"
+#include "VIMR/udpstream_async.hpp"
+#include "VIMR/serializablepose.hpp"
+#include "VIMR/async.hpp"
 #include <map>
 #include <string>
 #include "VoxelUDPSourceComponent.generated.h"
@@ -29,10 +30,10 @@ protected:
 	virtual void BeginPlay() override;
 
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
-	
+	VIMR::Utils::SerializablePose hmd_pose;
 	VIMR::Deserializer* deserializer = nullptr;
 	bool sendPoses = false;
 	std::map<std::string, VIMR::Network::UDPSenderAsync*> pose_senders;
 	VIMR::Utils::Buffer<char, 128> pose_buf;
-	VIMR::Async::RingbufferConsumer<VIMR::VoxelGrid, 8>* consumer = nullptr;
+	VIMR::Async::RingbufferConsumer<VIMR::Octree, 8>* consumer = nullptr;
 };

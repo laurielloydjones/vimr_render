@@ -18,11 +18,11 @@ public class vimr_render : ModuleRules
 		{
 			Definitions.Add("JSON_NOEXCEPTION");
 			string ProjectRoot = Directory.GetParent(ModuleDirectory).Parent.FullName;
-			RuntimeDependencies.Add(ProjectRoot + @"\Binaries\Win64\Voxels.dll");
-			RuntimeDependencies.Add(ProjectRoot + @"\Binaries\Win64\Network.dll");
-			RuntimeDependencies.Add(ProjectRoot + @"\Binaries\Win64\VoxelVideo.dll");
-			RuntimeDependencies.Add(ProjectRoot + @"\Binaries\Win64\AsyncSerial.dll");
-			RuntimeDependencies.Add(ProjectRoot + @"\Binaries\Win64\UnrealConfigWrapper.dll");
+			RuntimeDependencies.Add(ProjectRoot + @"\Binaries\Win64\vimr_voxels.dll");
+			RuntimeDependencies.Add(ProjectRoot + @"\Binaries\Win64\vimr_network.dll");
+			RuntimeDependencies.Add(ProjectRoot + @"\Binaries\Win64\vimr_voxvid.dll");
+			RuntimeDependencies.Add(ProjectRoot + @"\Binaries\Win64\vimr_async_serial.dll");
+			RuntimeDependencies.Add(ProjectRoot + @"\Binaries\Win64\vimr_cfg_unreal.dll");
 		}
 	}
 }

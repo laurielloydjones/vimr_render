@@ -35,6 +35,8 @@ UVoxelRenderSubComponent::UVoxelRenderSubComponent()
 	UpdateTextureRegion = new FUpdateTextureRegion2D(0, 0, 0, 0, SUB_VOXEL_COUNT_SQR, SUB_VOXEL_COUNT_SQR);
 
 	EmptyData = new uint8[SUB_VOXEL_COUNT * VOXEL_TEXTURE_BPP]();
+
+	//SetIsReplicated(true);
 }
 
 void UVoxelRenderSubComponent::OnComponentDestroyed(bool bDestroyingHierarchy)
@@ -84,6 +86,11 @@ void UVoxelRenderSubComponent::BeginPlay()
 		{
 			Material->SetVectorParameterValue(FName("Location"), Location);
 			bQueueLocation = false;
+		}
+		if (bQueueRotation)
+		{
+			Material->SetVectorParameterValue(FName("Rotation"), Rotation);
+			bQueueRotation = false;
 		}
 	}
 	else
@@ -157,5 +164,18 @@ void UVoxelRenderSubComponent::SetLocation(FVector Location)
 	else
 	{
 		bQueueLocation = true;
+	}
+}
+
+void UVoxelRenderSubComponent::SetRotation(FVector Rotation)
+{
+	this->Rotation = Rotation;
+	if (Material != nullptr)
+	{
+		Material->SetVectorParameterValue(FName("Rotation"), Rotation);
+	}
+	else
+	{
+		bQueueRotation = true;
 	}
 }
