@@ -11,5 +11,7 @@ Saved/*
 Content/Recordings/*
 Content/UserInterface/*
 Content/VoxelVideos/*
-Content/Maps/410Albany/Assets/*
+Content/Maps/410Albany/*
 Content/Maps/VRPowhiri/Assets/cleaned_marae.uasset
+
+WindowsNoEditor/*

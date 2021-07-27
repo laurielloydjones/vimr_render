@@ -20,7 +20,7 @@ void URuntimeAudioSource::LoadWav(FString wavPath)
 	SoundAttenuation->Attenuation.bAttenuate = 1;
 	SoundAttenuation->Attenuation.bSpatialize = 1;
 	SoundAttenuation->Attenuation.DistanceAlgorithm = EAttenuationDistanceModel::NaturalSound;
-	SoundAttenuation->Attenuation.FalloffDistance = 2500; // 2.5m, this depends on the environment and the playback sound loudness.
+	SoundAttenuation->Attenuation.FalloffDistance = 250000; // 2.5m, this depends on the environment and the playback sound loudness.
 
 	SoundWave = NewObject<USoundWaveProcedural>();
 	SoundWave->NumChannels = 1;
