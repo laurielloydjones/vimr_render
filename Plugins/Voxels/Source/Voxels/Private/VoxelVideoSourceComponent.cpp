@@ -45,7 +45,7 @@ void UVoxelVideoSourceComponent::BeginPlay()
 		//Exit game?
 	}
 
-	LoadVoxelVideo(VideoFileName);
+	LoadVoxelVideo(VideoFileName, false);
 	//Play();
 }
 
@@ -53,9 +53,10 @@ void UVoxelVideoSourceComponent::BeginPlay()
 void UVoxelVideoSourceComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-		if (VoxelVideoReader != nullptr) {
-		if (VoxelVideoReader->State() == VIMR::VoxVidPlayer::PlayState::Finished) {
-			//Go to next video
+	if (VoxelVideoReader != nullptr) 
+	{
+		if (VoxelVideoReader->State() == VIMR::VoxVidPlayer::PlayState::Finished) 
+		{
 		}
 	}
 
@@ -102,7 +103,7 @@ void UVoxelVideoSourceComponent::_restart()
 	}
 }
 
-void UVoxelVideoSourceComponent::LoadVoxelVideo(FString file)
+void UVoxelVideoSourceComponent::LoadVoxelVideo(FString file, bool loop)
 {
 	if (VoxelVideoReader != nullptr)
 	{
@@ -122,7 +123,7 @@ void UVoxelVideoSourceComponent::LoadVoxelVideo(FString file)
 
 	VoxelVideoReader = new VIMR::VoxVidPlayer(std::bind(&UVoxelSourceBaseComponent::CopyVoxelData, this, _1));
 	VoxelVideoReader->Load(TCHAR_TO_ANSI(*file_path));
-	VoxelVideoReader->Loop = false;
+	VoxelVideoReader->Loop = loop;
 	UE_LOG(VoxVidLog, Log, TEXT("Loaded file %s"), *file_path);
 
 	VIMR::AudioStream tmp_astrm;

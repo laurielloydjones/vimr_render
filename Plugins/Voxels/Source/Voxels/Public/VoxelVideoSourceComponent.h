@@ -53,7 +53,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "FileManagement")
 		TArray<FString> GetAllRecordings();
 	UFUNCTION(BlueprintCallable, Category = "FileManagement")
-		void LoadVoxelVideo(FString filepath);
+		void LoadVoxelVideo(FString filepath, bool loop);
 
 	UFUNCTION(BlueprintCallable)
 		void SetAudioLocation(FVector Location);
@@ -62,6 +62,9 @@ public:
 		FOnPlaybackFinished OnPlaybackFinished;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 		FString VideoFileName = "voxvid0.vx3";
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+		bool Loop = false;
 
 	UPROPERTY(BlueprintReadWrite,  EditAnywhere)
 		FString FileName;
