@@ -46,6 +46,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "PlaybackControl")
 		void Play(){cmdStack.push((PlaybackControlFnPtr)std::bind(&UVoxelVideoSourceComponent::_play, this));}
 	UFUNCTION(BlueprintCallable, Category = "PlaybackControl")
+		void PlayOnlyVideo() { cmdStack.push((PlaybackControlFnPtr)std::bind(&UVoxelVideoSourceComponent::_playOnlyVideo, this)); }
+	UFUNCTION(BlueprintCallable, Category = "PlaybackControl")
+		void PlayOnlySound() { cmdStack.push((PlaybackControlFnPtr)std::bind(&UVoxelVideoSourceComponent::_playOnlySound, this)); }
+	UFUNCTION(BlueprintCallable, Category = "PlaybackControl")
 		void Stop()	{cmdStack.push((PlaybackControlFnPtr)std::bind(&UVoxelVideoSourceComponent::_stop, this));}
 	UFUNCTION(BlueprintCallable, Category = "PlaybackControl")
 		void Restart(){cmdStack.push((PlaybackControlFnPtr)std::bind(&UVoxelVideoSourceComponent::_restart, this));}
@@ -62,6 +66,9 @@ public:
 		FOnPlaybackFinished OnPlaybackFinished;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 		FString VideoFileName = "voxvid0.vx3";
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+		bool Finished = false;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 		bool Loop = false;
@@ -90,6 +97,8 @@ protected:
 
 	void _pause();
 	void _play();
+	void _playOnlyVideo();
+	void _playOnlySound();
 	void _stop();
 	void _restart();
 };

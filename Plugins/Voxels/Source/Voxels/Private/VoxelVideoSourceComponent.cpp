@@ -57,6 +57,7 @@ void UVoxelVideoSourceComponent::TickComponent(float DeltaTime, ELevelTick TickT
 	{
 		if (VoxelVideoReader->State() == VIMR::VoxVidPlayer::PlayState::Finished) 
 		{
+			Finished = true;
 		}
 	}
 
@@ -83,6 +84,18 @@ void UVoxelVideoSourceComponent::_pause()
 void UVoxelVideoSourceComponent::_play()
 {
 	VoxelVideoReader->Play();
+	for (auto i : AudioStreams) {
+		i.second->Start();
+	}
+}
+
+void UVoxelVideoSourceComponent::_playOnlyVideo()
+{
+	VoxelVideoReader->Play();
+}
+
+void UVoxelVideoSourceComponent::_playOnlySound()
+{
 	for (auto i : AudioStreams) {
 		i.second->Start();
 	}
