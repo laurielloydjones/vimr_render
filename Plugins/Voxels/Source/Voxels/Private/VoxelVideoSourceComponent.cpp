@@ -57,6 +57,7 @@ void UVoxelVideoSourceComponent::TickComponent(float DeltaTime, ELevelTick TickT
 	{
 		if (VoxelVideoReader->State() == VIMR::VoxVidPlayer::PlayState::Finished) 
 		{
+			OnPlaybackFinished.Broadcast();
 			Finished = true;
 		}
 	}

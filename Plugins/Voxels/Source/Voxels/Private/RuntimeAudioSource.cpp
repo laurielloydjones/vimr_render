@@ -44,7 +44,7 @@ void URuntimeAudioSource::LoadWav(FString wavPath)
 		AudioComponent->AttachToComponent(this, FAttachmentTransformRules(EAttachmentRule::KeepRelative, false));
 		AudioComponent->bAutoActivate = true;
 		AudioComponent->bAlwaysPlay = true;
-		AudioComponent->VolumeMultiplier = 1.2f;
+		AudioComponent->VolumeMultiplier = 1.0f;
 		AudioComponent->bIsUISound = true;
 		AudioComponent->bAllowSpatialization = true;
 		AudioComponent->bAutoDestroy = false;
